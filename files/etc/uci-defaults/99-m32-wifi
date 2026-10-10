@@ -1,0 +1,4 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-2.0-only
+/etc/init.d/m32-wifi enable
+exit 0

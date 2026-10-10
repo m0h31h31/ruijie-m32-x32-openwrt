@@ -1,0 +1,22 @@
+#!/bin/sh /etc/rc.common
+# SPDX-License-Identifier: GPL-2.0-only
+START=99
+STOP=10
+
+start() {
+    (
+        sleep 20
+        modprobe mt7915e || { logger -t m32-wifi "MT7915 load failed"; exit 1; }
+        sleep 2
+        # Create missing radio configuration; preserve existing SSIDs and keys.
+        ucode /lib/wifi/mac80211.uc
+        wifi reload
+        logger -t m32-wifi "Delayed MT7915 initialization completed"
+    ) >/tmp/m32-wifi.log 2>&1 &
+    echo $! >/var/run/m32-wifi.pid
+}
+
+stop() {
+    [ ! -f /var/run/m32-wifi.pid ] || kill "$(cat /var/run/m32-wifi.pid)" 2>/dev/null
+    rm -f /var/run/m32-wifi.pid
+}

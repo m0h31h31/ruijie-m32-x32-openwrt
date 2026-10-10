@@ -2,8 +2,8 @@
 set -euo pipefail
 umask 022
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-source_dir=/mnt/e/DATA/PycharmProjects/Ruijie_M32_OpenWrt
-build_dir=/home/jack/openwrt-m32-25.12.5
+source_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+build_dir=${BUILD_DIR:-$HOME/openwrt-m32-25.12.5}
 mkdir -p "$build_dir"
 cd "$build_dir"
 exec > >(tee -a local-build.log) 2>&1
@@ -16,6 +16,8 @@ if [ ! -f adaptation-applied ]; then
   python3 "$source_dir/scripts/adapt.py" openwrt
   touch adaptation-applied
 fi
+cp -a "$source_dir/files/." openwrt/files/
+chmod +x openwrt/files/etc/init.d/* openwrt/files/etc/uci-defaults/*
 mkdir -p output
 git -C openwrt diff > output/m32-adaptation.patch
 cp openwrt/target/linux/mediatek/dts/mt7622-ruijie-rg-ew3200gx-pro.dts output/m32-x32.dts

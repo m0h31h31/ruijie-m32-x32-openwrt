@@ -3,4 +3,17 @@ __pycache__/
 openwrt/
 output/
 local-output/
-build.log
+cloud-output/
+flash-output/
+release-output/
+factory-backup/
+*.log
+com3-*.json
+com3-command.txt
+boot-from-flash.flag
+tftpd32-before-kernel.ini
+shared-chat.html
+
+# Local serial automation is machine-specific.
+scripts/watch-com3.py
+scripts/boot-new-kernel.py

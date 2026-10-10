@@ -5,6 +5,7 @@ from pathlib import Path
 import shutil
 
 root, out = map(Path, sys.argv[1:])
+out.mkdir(parents=True, exist_ok=True)
 images = root / 'bin/targets/mediatek/mt7622'
 for kind in ('initramfs-kernel', 'squashfs-sysupgrade'):
     matches = list(images.glob(f'*ruijie_rg-ew3200gx-pro-{kind}.bin'))

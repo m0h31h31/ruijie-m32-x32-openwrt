@@ -34,3 +34,20 @@ assert source.count(anchor) == 1
 source = source.replace(anchor, anchor + '  IMAGE_SIZE := 15424k\n')
 mk.write_text(source)
 print('Adapted eight partitions; EEPROM absolute addresses: 0x90000 / 0x95000; firmware limit: 15424 KiB')
+
+# M32 stock environment is 64 KiB; verified against the original backup CRC.
+envtools = root / 'package/boot/uboot-tools/uboot-envtools/files/mediatek_mt7622'
+source = envtools.read_text()
+old_env = 'ubootenv_add_uci_config "/dev/mtd3" "0x0" "0x20000" "0x20000"'
+assert source.count(old_env) == 1, 'Unexpected upstream Ruijie environment configuration'
+envtools.write_text(source.replace(old_env, 'ubootenv_add_uci_config "/dev/mtd3" "0x0" "0x10000" "0x10000"'))
+print('Adapted M32 U-Boot environment size and erase sector to 64 KiB')
+
+# Apply the release overlay and ensure init scripts are executable.
+import shutil
+overlay = Path(__file__).resolve().parents[1] / 'files'
+shutil.copytree(overlay, root / 'files', dirs_exist_ok=True)
+for path in (root / 'files/etc/init.d').glob('*'):
+    path.chmod(0o755)
+for path in (root / 'files/etc/uci-defaults').glob('*'):
+    path.chmod(0o755)
